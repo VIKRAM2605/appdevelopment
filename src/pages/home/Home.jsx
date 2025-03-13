@@ -13,38 +13,35 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import React, {useState} from 'react';
-import {StyleSheet} from 'react-native';
-import {Avatar} from 'react-native-elements';
+import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
+
 const image = {
   uri: 'https://static.vecteezy.com/system/resources/previews/030/678/881/large_2x/red-background-high-quality-free-photo.jpg',
 };
+
 const Home = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false); // Dark mode is enabled by default
   const [modalVisible, setModalVisible] = useState(false);
   const [load, isload] = useState(false);
-  const [logoutModalVisible, setLogoutModalVisible] = useState(false); // Modal state for logout
-  
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+
   const isloading = () => {
-    isload(!load);
+    isload(true);
     setTimeout(() => {
-      isload(!load);
+      isload(false);
+      setModalVisible(true); // Open the modal after loading
     }, 1000);
   };
 
-  // Handle logout click
   const handleLogout = () => {
-    setLogoutModalVisible(true);
-    setTimeout(() => {
-      // Close logout modal after showing the message
-      setLogoutModalVisible(false);
-    }, 2000); // Hide after 2 seconds
+    Alert.alert("Alert","Logged Out")
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: isEnabled ? '#121212' : '#fff' }]}>
       <View style={styles.imagecontainer}>
         <ImageBackground style={styles.image} source={image} resizeMode="cover">
           <Image
@@ -53,25 +50,21 @@ const Home = () => {
               uri: 'https://icon-library.com/images/avatar-icon-images/avatar-icon-images-4.jpg',
             }}
           />
-          <Text style={[styles.text, {color: isEnabled ? 'white' : 'black'}]}>{name}</Text>
+          <Text style={[styles.text, { color: isEnabled ? 'white' : 'white' }]}>{name}</Text>
         </ImageBackground>
       </View>
-      <View style={styles.Box}>
+      <View style={[styles.Box, { backgroundColor: isEnabled ? '#2c2c2c' : '#f4f4f4' }]}>
         <View style={styles.Innerbox}>
-          <Text style={styles.titleText}>Profile Information</Text>
-          <Text style={styles.paraText}>Name:</Text>
-          <TextInput style={styles.input} onChangeText={setName} value={name} />
-          <Text style={styles.paraText}>Email:</Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setEmail}
-            value={email}
-          />
+          <Text style={[styles.titleText, { color: isEnabled ? 'white' : 'black' }]}>Profile Information</Text>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black' }]}>Name:</Text>
+          <TextInput style={[styles.input, { backgroundColor: isEnabled ? '#555' : '#fff',color: isEnabled ? 'white' : 'black' }]} onChangeText={setName} value={name} />
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>Email:</Text>
+          <TextInput style={[styles.input, { backgroundColor: isEnabled ? '#555' : '#fff',color: isEnabled ? 'white' : 'black' }]} onChangeText={setEmail} value={email} />
           <View style={styles.Dark}>
-            <Text style={[styles.paraText, {color: isEnabled ? 'white' : 'black'}]}>Dark Mode</Text>
+            <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>Dark Mode</Text>
             <Switch
-              style={{top: 7, position: 'relative'}}
-              trackColor={{false: '#767577', true: '#81b0ff'}}
+              style={{ top: 7, position: 'relative' }}
+              trackColor={{ false: '#767577', true: '#81b0ff' }}
               thumbColor={isEnabled ? '#f4f3f4' : '#f4f3f4'}
               ios_backgroundColor="#3e3e3e"
               onValueChange={() => setIsEnabled(!isEnabled)}
@@ -80,64 +73,84 @@ const Home = () => {
           </View>
           <View style={styles.buttonContainer}>
             <Modal
-              style={{flex: 1}}
+              style={{ flex: 1 }}
               animationType="slide"
               transparent={true}
               visible={modalVisible}
-              onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
-                setModalVisible(!modalVisible);
-              }}>
+              onRequestClose={() => setModalVisible(!modalVisible)}>
               <View style={styles.modalView}>
                 <View style={styles.modalBox}>
-                  <View style={{alignItems: 'center'}}>
-                    <Image style={{width: 50, height: 50}} source={{uri: 'https://static.vecteezy.com/system/resources/previews/007/749/074/non_2x/bright-green-tick-checkmark-icon-free-vector.jpg'}} />
+                  <View style={{ alignItems: 'center' }}>
+                    <Image
+                      style={{ width: 50, height: 50 }}
+                      source={{
+                        uri: 'https://static.vecteezy.com/system/resources/previews/007/749/074/non_2x/bright-green-tick-checkmark-icon-free-vector.jpg',
+                      }}
+                    />
                   </View>
-                  <Text style={styles.modalText}>Changes Saved successfully!</Text>
-                  <Pressable
-                    style={[styles.button, styles.buttonClose]}
-                    onPress={() => setModalVisible(!modalVisible)}>
-                    <View><Button title="Close" onPress={() => setModalVisible(!modalVisible)} /></View>
-                  </Pressable>
+                  <Text style={[styles.modalText,{ color: isEnabled ? 'white' : 'black',padding:10,paddingBottom:0,fontSize:20,fontWeight:'bold' }]}>Success!</Text>
+                  <Text style={[styles.modalText, { color: isEnabled ? 'grey' : 'grey',paddingBottom:15,paddingTop:15 }]}>Changes Saved successfully!</Text>
+                  <View style={{width:200}}>
+                  <Button title="Close" onPress={() => setModalVisible(!modalVisible)} />
+                  </View>
                 </View>
               </View>
             </Modal>
             {load ? (
               <ActivityIndicator size="large" />
             ) : (
-              <Button onPress={() => {
-                isloading();
-              }} title="SAVE CHANGES" />
+              <Button onPress={isloading} title="SAVE CHANGES" />
             )}
           </View>
         </View>
       </View>
-
-      {/* Logout Modal */}
-      <Modal
-        style={{flex: 1}}
-        animationType="fade"
-        transparent={true}
-        visible={logoutModalVisible}
-        onRequestClose={() => setLogoutModalVisible(false)}>
-        <View style={styles.modalView}>
-          <View style={styles.modalBox}>
-            <Text style={styles.modalText}>Logout successfully!</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setLogoutModalVisible(false)}>
-              <View><Button title="Close" onPress={() => setLogoutModalVisible(false)} /></View>
-            </Pressable>
+      <View style={[styles.Box, { backgroundColor: isEnabled ? '#2c2c2c' : '#f4f4f4' }]}>
+        <View style={styles.Innerbox}>
+          <Text style={[styles.titleText, { color: isEnabled ? 'white' : 'black' }]}>Preferences</Text>
+          <View style={styles.Dark}>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black' }]}>Notifications</Text>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>›</Text>
+          </View>
+          <View style={styles.Dark}>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>Language</Text>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>›</Text>
+          </View>
+          <View style={styles.Dark}>
+            <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>Privacy</Text>
+            <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>›</Text>
           </View>
         </View>
-      </Modal>
+      </View>
+      <View style={[styles.Box, { backgroundColor: isEnabled ? '#2c2c2c' : '#f4f4f4' }]}>
+        <View style={styles.Innerbox}>
+          <Text style={[styles.titleText, { color: isEnabled ? 'white' : 'black' }]}>General</Text>
+          <View style={[styles.Dark,{marginBottom:0}]}>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black' }]}>Account Info</Text>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>›</Text>
+          </View>
+          <View style={[styles.Dark,{borderBottomWidth:0,paddingBottom:0,}]}>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>Security</Text>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>›</Text>
+          </View>
+          <Text style={[styles.titleText, { color: isEnabled ? 'white' : 'black' }]}>Preferences</Text>
+          <View style={[styles.Dark,{borderBottomWidth:0,paddingBottom:0}]}>
+            <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>Dark Mode</Text>
+            <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>›</Text>
+          </View>
+          <View style={[styles.Dark,{borderBottomWidth:0,paddingBottom:0}]}>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>Notifications</Text>
+          <Text style={[styles.paraText, { color: isEnabled ? 'white' : 'black'}]}>›</Text>
+          </View>
+        </View>
+      </View>
 
       {/* Logout Button */}
       <View style={styles.buttonbox}>
         <TouchableOpacity onPress={handleLogout}>
-          <Text>Logout</Text>
+          <Text style={[styles.logoutText, { color: isEnabled ? 'white' : 'white' }]}>Logout</Text>
         </TouchableOpacity>
       </View>
+    
     </ScrollView>
   );
 };
@@ -152,26 +165,19 @@ const styles = StyleSheet.create({
     marginTop: 15,
     marginLeft: 0,
   },
-
-  arrow: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginTop: 8,
-    marginBottom: 0,
-  },
   buttonbox: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
     margin: 20,
-    height: 60,
+    height: 50,
     backgroundColor: '#b83228',
   },
-  textStyle: {
-    color: 'black',
+  logoutText: {
+    fontSize: 16,
+    padding:0,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
   modalView: {
     justifyContent: 'center',
@@ -179,43 +185,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modalBox: {
-    flexDirection: 'column',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    margin: 20,
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 20,
-    paddingLeft: 30,
-    paddingRight: 30,
+    padding: 40,
+    
   },
   modalText: {
     color: '#a6a6a9',
-  },
-  arrowBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderStyle: 'solid',
-    paddingBottom: 20,
-    marginTop: 13,
-    borderBottomWidth: 1,
-  },
-  arrowBoxTextTitle: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    backgroundColor: '#1e1e1e',
-    padding: 8,
-  },
-  arrowBottombox: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    borderStyle: 'solid',
-    paddingBottom: 13,
-    marginTop: 13,
-    position: 'relative',
-    top: -7,
+    paddingBottom:20,
   },
   Dark: {
     borderStyle: 'solid',
+    borderColor:'grey',
     borderBottomWidth: 1,
     paddingBottom: 20,
     marginBottom: 20,
@@ -265,7 +248,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   text: {
-    color: 'white',
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -278,7 +260,5 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     padding: 10,
     borderRadius: 10,
-    backgroundColor: '#343436',
-  
-},
-})
+  },
+});
